@@ -172,6 +172,8 @@ public class HSPI : AbstractPlugin {
 				_mqttServer = null;
 				
 				WriteLog(ELogType.Error, $"Unable to start internal MQTT broker: {ex.Message}");
+				Status = PluginStatus.Critical($"Unable to start internal MQTT broker: {ex.Message}");
+				
 				await Task.Delay(2000);
 				await MqttConnect();
 				return;
@@ -190,6 +192,8 @@ public class HSPI : AbstractPlugin {
 				_mqttServer = null;
 			}
 		}
+		
+		Status = PluginStatus.Ok();
 
 		_mqttClient.OnRatgdoEvent += (object src, MqttClientManager.RatgdoEvent args) => {
 			bool isDoorRecognized = _ratgdoInstances.ContainsKey(args.DoorName);
