@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches:
+      # Only run on branch push, not tag push
+      - '**'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1
+      
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v1
+      
+    - name: Nuget restore
+      run: nuget restore HSPI_ratgdo.sln
+    
+    - name: Generate assembly version
+      uses: DoctorMcKay/action-csharp-majoryearweekbuild-version@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: MSBuild
+      run: |
+        msbuild /p:Configuration=Debug /m HSPI_ratgdo.sln
+        msbuild /p:Configuration=Release /m HSPI_ratgdo.sln
+        
+    - name: Stage artifacts
+      run: |
+        mkdir artifacts
+        cp HSPI_ratgdo\bin\Release\HSPI_ratgdo.exe artifacts\HSPI_ratgdo.exe
+        cp HSPI_ratgdo\bin\Release\HSPI_ratgdo.exe.config artifacts\HSPI_ratgdo.exe.config
+        cp HSPI_ratgdo\bin\Release\*.dll artifacts
+        cp html\*.* artifacts
+        cp install.txt artifacts\install.txt
+        $release_version = (Get-ChildItem -Filter "artifacts\HSPI_ratgdo.exe" | Select-Object -ExpandProperty VersionInfo).FileVersion.Replace('.', '-')
+        echo "release_version=$release_version"
+        echo "release_version=$release_version" >> $env:GITHUB_ENV
+    
+    - name: Stage debug artifacts
+      run: |
+        mkdir artifacts-debug
+        cp HSPI_ratgdo\bin\Debug\HSPI_ratgdo.exe artifacts-debug\HSPI_ratgdo.exe
+        cp HSPI_ratgdo\bin\Debug\HSPI_ratgdo.exe.config artifacts-debug\HSPI_ratgdo.exe.config
+        cp HSPI_ratgdo\bin\Debug\*.dll artifacts-debug
+        cp html\*.* artifacts-debug
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ratgdo_${{ env.release_version }}
+        path: artifacts
+    
+    - name: Upload debug artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Debug Build
+        path: artifacts-debug

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<!--This maintains the scale of the page based on the scale of the screen-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="HomeSeer Technologies">
+		<!--This liquid tag loads all of the necessary css files for HomeSeer-->
+		{{includefile '/bootstrap/css/page_common.css'}}
+		<title>ratgdo — Settings</title>
+		
+		<style>
+			body.loading {
+				cursor: wait;
+			}
+			
+			.external-broker-only, .internal-broker-only {
+				display: none;
+			}
+			
+			body.using-internal-broker .internal-broker-only {
+				display: block;
+			}
+			
+			body.using-external-broker .external-broker-only {
+				display: block;
+			}
+			
+			.code {
+				font-family: monospace;
+			}
+			
+			.italic {
+				font-style: italic;
+			}
+			
+			.internal-broker-only, .external-broker-only, #save-btn-container {
+				display: none;
+			}
+		</style>
+	</head>
+	<body class="body homeseer-skin loading">
+		<!--These liquid tags add the HomeSeer header and navbar to the top of the page when appropriate-->
+		{{includefile 'header.html'}}
+		{{includefile 'navbar.html'}}
+		<!--Primary container for the page content
+			The .container class ensures the page content is fit and centered to the screen-->
+		<div class="container">
+			<div class="tab-content card">
+				<div class="streakhs grey lighten-2">Connected ratgdo Devices</div>
+	
+				<div class="row no-gutters grey lighten-3">
+					<div class="col-6 col-lg-4">Name</div>
+					<div class="col-6">Status</div>
+				</div>
+	
+				<div id="ratgdo-table-body" class="ratgdo-table-body"></div>
+				
+				<!-- Settings -->
+				<div class="streakhs grey lighten-2">Settings</div>
+				
+				<div class="row">
+					<div class="hs-toggle col-sm-6">
+						<span class="hs-toggle-control">
+							<span class="form-check form-check-inline hs-toggle-checkbox">
+								<input type="checkbox" class="form-check-input" id="checkbox-use-external-broker" />
+								<label class="form-check-label has-toggle-checkbox-label" for="checkbox-use-external-broker">
+									Use custom MQTT broker
+								</label>
+							</span>
+						</span>
+					</div>
+					
+					<div class="col-sm-6 external-broker-only" id="mqtt-status"></div>
+				</div>
+				
+				<div class="external-broker-only">
+					<div class="row mt-1 mb-1 no-gutters">
+						<div class="col-lg-6 md-form">
+							<input type="text" id="input-mqtt-host" class="form-control" />
+							<label for="input-mqtt-host">MQTT Broker Address</label>
+						</div>
+					</div>
+
+					<div class="row mt-1 mb-1 no-gutters">
+						<div class="col-lg-6 md-form">
+							<input type="number" min="1" max="65535" id="input-mqtt-port" class="form-control" value="1883" />
+							<label for="input-mqtt-port">MQTT Broker Port</label>
+						</div>
+					</div>
+
+					<div class="row mt-1 mb-1 no-gutters">
+						<div class="col-lg-6 md-form">
+							<input type="text" id="input-mqtt-username" class="form-control" />
+							<label for="input-mqtt-username">MQTT Username</label>
+						</div>
+					</div>
+
+					<div class="row mt-1 mb-1 no-gutters">
+						<div class="col-lg-6 md-form">
+							<input type="password" id="input-mqtt-password" class="form-control" />
+							<label for="input-mqtt-password">MQTT Password</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row mt-2 pl-2" id="save-btn-container">
+					<button type="button" class="btn btn-success waves-effect waves-light" id="btn-save">
+						Save
+					</button>
+				</div>
+				
+				<div class="streakhs grey lighten-2">Setup Instructions</div>
+				
+				<p>
+					<strong>Important:</strong> You must install the appropriate MQTT firmware for your ratgdo device.
+					Visit the <a href="https://paulwieland.github.io/ratgdo/flash.html" target="_blank">ratgdo Firmware</a>
+					page, then choose the appropriate firmware version for your hardware in the dropdown menu under
+					the MQTT heading. Make sure that you don't pick the "WiFi disabled" version.
+				</p>
+				
+				<p>
+					Once you've flashed your firmware and connected your ratgdo device to WiFi, configure it as shown
+					below. Once it's configured correctly, it should automatically appear in the device list above,
+					and a device will be added to HS4.
+				</p>
+				
+				<hr />
+				
+				<dl>
+					<dt>Device Name &amp; Web Config Username</dt>
+					<dd>
+						<em>
+							Choose whatever name you want, as long as it's unique within your home.
+							If you change this name in the future, you will need to set up your HS4 devices from
+							scratch again. The name must not contain any of these characters: / \ # +
+						</em>
+					</dd>
+
+					<dt>OTA &amp; Web Config Password</dt>
+					<dd>
+						<em>
+							Choose whatever password you want. HS4 will not need to know this password.
+						</em>
+					</dd>
+
+					<dt>IP address</dt>
+					<dd>
+						<em>
+							Leave as default or choose whatever IP address you want.
+						</em>
+					</dd>
+
+					<dt>SSID</dt>
+					<dd>
+						<em>
+							Your WiFi network name.
+						</em>
+					</dd>
+
+					<dt>WiFi password</dt>
+					<dd>
+						<em>
+							Your WiFi network password.
+						</em>
+					</dd>
+
+					<dt>Enable MQTT</dt>
+					<dd>ON</dd>
+
+					<dt>MQTT server IP</dt>
+					<dd id="broker-ip-address" class="code"></dd>
+					
+					<dt>MQTT server port</dt>
+					<dd id="broker-port" class="code"></dd>
+
+					<dt>MQTT server username</dt>
+					<dd id="internal-broker-username" class="code internal-broker-only"></dd>
+					<dd id="external-broker-username" class="italic external-broker-only">Determined by your broker</dd>
+
+					<dt>MQTT server password</dt>
+					<dd id="internal-broker-password" class="code internal-broker-only"></dd>
+					<dd id="external-broker-password" class="italic external-broker-only">Determined by your broker</dd>
+
+					<dt>MQTT Topic Prefix</dt>
+					<dd>
+						<span class="code">ratgdo/</span>
+						<em>(the slash at the end is important!)</em>
+					</dd>
+				</dl>
+				
+				<hr />
+				
+				<p>
+					The rest of the settings don't matter. You can change them however you want or leave them as
+					default. You should make sure that your control protocol is set appropriately for your garage
+					door opener, as described on the
+					<a href="https://paulwieland.github.io/ratgdo/02_configuration.html" target="_blank">ratgdo configuration page</a>.
+				</p>
+			</div>
+		</div>
+
+		{{includefile 'bootstrap/js/page_common.js'}}
+		<script>
+			(async function() {
+				let g_PreviousDevicesState = '';
+				let g_UsingInternalBroker = false;
+				
+				init();
+				
+				$('#save-btn-container').hide();
+				
+				$('#checkbox-use-external-broker').change(() => {
+					let useExternal = $('#checkbox-use-external-broker').prop('checked');
+					$('body').removeClass('using-external-broker using-internal-broker')
+							.addClass(useExternal ? 'using-external-broker' : 'using-internal-broker');
+				});
+				
+				$('button, input').on('keyup change', () => {
+					$('#save-btn-container').show();
+				});
+				
+				$('#btn-save').click(async () => {
+					let options = {
+						mqtt_host: $('#checkbox-use-external-broker').prop('checked')
+								? $('#input-mqtt-host').val()
+								: 'internal',
+						mqtt_port: $('#input-mqtt-port').val(),
+						mqtt_username: $('#input-mqtt-username').val(),
+						mqtt_password: $('#input-mqtt-password').val()
+					};
+
+					let $formElements = $('input, button');
+					try {
+						$formElements.prop('disabled', true);
+						$('body').addClass('loading');
+						
+						await jsonRpc('SaveConfig', options);
+						await updateConfig();
+						
+						$('#save-btn-container').hide();
+					} catch (ex) {
+						alert(ex.message);
+					} finally {
+						$formElements.prop('disabled', false);
+						$('body').removeClass('loading');
+					}
+				});
+				
+				async function init() {
+					await updateConfig();
+					await updateMqttStatus();
+					await updateDevices();
+					$('body').removeClass('loading');
+				}
+				
+				async function updateConfig() {
+					let config = await jsonRpc('GetConfig');
+					
+					g_UsingInternalBroker = config.mqtt_host == 'internal';
+					
+					if (config.mqtt_host == 'internal') {
+						$('body').removeClass('using-external-broker')
+								.addClass('using-internal-broker');
+						
+						$('#checkbox-use-external-broker').attr('checked', false);
+						
+						$('#broker-ip-address').text(config.local_address);
+						$('#broker-port').text(config.mqtt_port);
+						$('#internal-broker-username').text(config.mqtt_internal_broker_username);
+						$('#internal-broker-password').text(config.mqtt_internal_broker_password);
+						$('#mqtt-status').text('Not Connected');
+					} else {
+						$('body').removeClass('using-internal-broker')
+								.addClass('using-external-broker');
+						
+						$('#broker-ip-address').text(config.mqtt_host);
+						$('#broker-port').text(config.mqtt_port);
+
+						$('#checkbox-use-external-broker').attr('checked', true);
+						
+						['host', 'port', 'username', 'password'].forEach((field) => {
+							let val = config[`mqtt_${field}`];
+							if (val) {
+								let $field = $(`#input-mqtt-${field}`);
+								$field.val(val);
+								$field.parent().find('label').addClass('active');
+							}
+						});
+					}
+				}
+				
+				async function updateMqttStatus() {
+					if (g_UsingInternalBroker) {
+						// Don't bother checking status if we're using the internal broker
+						setTimeout(updateMqttStatus, 1000);
+						return;
+					}
+					
+					try {
+						let {mqtt_status} = await jsonRpc('GetMqttStatus');
+						let outputStatus = 'Connected';
+						
+						if (mqtt_status != 'Success') {
+							outputStatus = mqtt_status == null ? 'Not Connected' : `Error: ${mqtt_status}`;	
+						}
+						
+						$('#mqtt-status').text(outputStatus);
+					} finally {
+						setTimeout(updateMqttStatus, 1000);
+					}
+				}
+				
+				async function updateDevices() {
+					try {
+						let devices = await jsonRpc('GetDevices');
+
+						let serializeDevices = devices.map(d => `${d.name}=${d.is_online ? 'online' : 'offline'}`);
+						serializeDevices.sort();
+						let serializedState = serializeDevices.join(',');
+						if (serializedState == g_PreviousDevicesState) {
+							return;
+						}
+
+						g_PreviousDevicesState = serializedState;
+
+						let $ratgdoTable = $('#ratgdo-table-body');
+						$ratgdoTable.html('');
+
+						devices.forEach(({name, is_online}) => {
+							let $row = $('<div class="row no-gutters" />');
+
+							let $col = $('<div class="col-6 col-lg-4" />');
+							$col.text(name);
+							$row.append($col);
+
+							$col = $('<div class="col-6" />');
+							$col.text(is_online ? 'Online' : 'Offline');
+							$row.append($col);
+
+							$ratgdoTable.append($row);
+						});
+					} finally {
+						setTimeout(updateDevices, 1000);
+					}
+				}
+				
+				function jsonRpc(method, params) {
+					return new Promise((resolve, reject) => {
+						let xhr = new XMLHttpRequest();
+						xhr.open('POST', '#');
+						xhr.setRequestHeader('Content-Type', 'application/json');
+						
+						xhr.send(JSON.stringify({
+							jsonrpc: '2.0',
+							id: 1,
+							method,
+							params
+						}));
+						
+						xhr.addEventListener('readystatechange', () => {
+							if (xhr.readyState != XMLHttpRequest.DONE) {
+								return;
+							}
+							
+							if (xhr.status != 200) {
+								return reject(new Error(`HTTP error ${xhr.status}`));
+							}
+							
+							try {
+								let response = JSON.parse(xhr.responseText);
+								if (response.jsonrpc != '2.0') {
+									return reject(new Error('Response is not a valid JSON-RPC object'));
+								}
+								
+								if (response.error) {
+									let err = new Error(response.error.message);
+									err.code = response.error.code;
+									err.data = response.error.data;
+									return reject(err);
+								}
+								
+								return resolve(response.result);
+							} catch (ex) {
+								return reject(ex);
+							}
+						})
+					});
+				}
+			})();
+		</script>
+	</body>
+</html>

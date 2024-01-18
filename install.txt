@@ -1,0 +1,8 @@
+HSPI_ratgdo.exe,.,0
+HSPI_ratgdo.exe.config,.,0
+HSCF.dll,.\bin\ratgdo,0
+MQTTnet.dll,.\bin\ratgdo,0
+MQTTnet.Extensions.ManagedClient.dll,.\bin\ratgdo,0
+Newtonsoft.Json.dll,.\bin\ratgdo,0
+PluginSdk.dll,.\bin\ratgdo,0
+settings.html,.\html\ratgdo,0
