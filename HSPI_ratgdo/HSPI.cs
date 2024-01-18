@@ -25,16 +25,23 @@ public class HSPI : AbstractPlugin {
 	public override string Name { get; } = PLUGIN_NAME;
 	protected override string SettingsFileName { get; } = "ragdo.ini";
 
+	private bool _debugLogging = false;
+
+	public string? CustomSystemId => _analyticsClient?.CustomSystemId;
+	public bool DebugLogging {
+		get => _debugLogging;
+		set {
+			_debugLogging = value;
+			SaveIniSetting("Debug", "debug_logging", value ? "1" : "0");
+		}
+	}
+
 	private MqttClientManager? _mqttClient = null;
 	private MqttServerManager? _mqttServer = null;
 
 	private readonly Dictionary<string, RatgdoInstance> _ratgdoInstances = new Dictionary<string, RatgdoInstance>();
 	
-	private readonly AnalyticsClient _analyticsClient;
-
-	public HSPI() {
-		_analyticsClient = new AnalyticsClient(this, HomeSeerSystem);
-	}
+	private AnalyticsClient? _analyticsClient = null;
 	
 	protected override void Initialize() {
 		WriteLog(ELogType.Trace, "Initialize");
@@ -63,7 +70,12 @@ public class HSPI : AbstractPlugin {
 			SaveIniSetting("MQTT_Internal", "password", internalPassword);
 		}
 
+		DebugLogging = GetIniSetting("Debug", "debug_logging", "0") == "1";
+
 		MqttConnect().ContinueWith(_ => { });
+		
+		_analyticsClient = new AnalyticsClient(this, HomeSeerSystem);
+		_analyticsClient.ReportIn(5000);
 	}
 
 	protected override bool OnSettingChange(string pageId, AbstractView currentView, AbstractView changedView) {
@@ -207,7 +219,7 @@ public class HSPI : AbstractPlugin {
 	}
 	
 	public void WriteLog(ELogType logType, string message, [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string? caller = null) {
-		_analyticsClient.WriteLog(logType, message, lineNumber, caller);
+		_analyticsClient?.WriteLog(logType, message, lineNumber, caller);
 		
 		#if DEBUG
 			bool isDebugMode = true;
@@ -219,7 +231,7 @@ public class HSPI : AbstractPlugin {
 			string type = logType.ToString().ToLower();
 			Console.WriteLine($"[{type}] {message}");
 		#else
-			bool isDebugMode = _debugLogging;
+			bool isDebugMode = DebugLogging;
 		#endif
 
 		if (logType <= ELogType.Debug && !isDebugMode) {

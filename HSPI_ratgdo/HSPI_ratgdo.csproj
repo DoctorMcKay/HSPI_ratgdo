@@ -70,8 +70,10 @@
         <Compile Include="JsonObjects\JsonRpcRequest.cs" />
         <Compile Include="JsonObjects\JsonRpcResponse.cs" />
         <Compile Include="JsonObjects\RpcSettings\GetConfigResponse.cs" />
+        <Compile Include="JsonObjects\RpcSettings\GetInfoResponse.cs" />
         <Compile Include="JsonObjects\RpcSettings\GetMqttStatusResponse.cs" />
         <Compile Include="JsonObjects\RpcSettings\SaveConfigRequest.cs" />
+        <Compile Include="JsonObjects\RpcSettings\SetDebugLoggingRequest.cs" />
         <Compile Include="MqttClientManager.cs" />
         <Compile Include="MqttServerManager.cs" />
         <Compile Include="Program.cs"/>

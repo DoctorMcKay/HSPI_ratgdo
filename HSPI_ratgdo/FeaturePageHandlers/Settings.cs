@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using HSPI_ratgdo.Enums;
 using HSPI_ratgdo.JsonObjects;
@@ -32,6 +33,12 @@ public class Settings(HSPI plugin) : AbstractFeaturePageHandler(plugin) {
 	
 	protected override JsonRpcResponse HandleCommand(JsonRpcRequest request) {
 		switch (request.Method) {
+			case "GetInfo":
+				return _getInfo(request);
+			
+			case "SetDebugLogging":
+				return _setDebugLogging(request);
+			
 			case "GetConfig":
 				return _getConfig(request);
 			
@@ -47,6 +54,22 @@ public class Settings(HSPI plugin) : AbstractFeaturePageHandler(plugin) {
 			default:
 				return new JsonRpcResponse(request.Id, (int) RpcErrorCode.MethodNotFound, "Method not found");
 		}
+	}
+
+	private JsonRpcResponse _getInfo(JsonRpcRequest request) {
+		return request.Respond(new GetInfoResponse(Plugin.CustomSystemId ?? "", Plugin.DebugLogging));
+	}
+
+	private JsonRpcResponse _setDebugLogging(JsonRpcRequest request) {
+		SetDebugLoggingRequest? input = JsonConvert.DeserializeObject<SetDebugLoggingRequest>(JsonConvert.SerializeObject(request.Params));
+		if (input?.DebugLogging == null) {
+			request.Error((int) RpcErrorCode.InvalidParams, "Invalid params");
+		}
+
+		// We already checked for null above but C# is dumb
+		Plugin.DebugLogging = input?.DebugLogging ?? false;
+
+		return request.Respond("OK");
 	}
 
 	private JsonRpcResponse _getConfig(JsonRpcRequest request) {

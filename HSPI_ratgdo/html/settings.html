@@ -38,6 +38,11 @@
 			.internal-broker-only, .external-broker-only, #save-btn-container {
 				display: none;
 			}
+			
+			.jui-view p {
+				font-weight: 300;
+				margin-bottom: 0;
+			}
 		</style>
 	</head>
 	<body class="body homeseer-skin loading">
@@ -47,7 +52,7 @@
 		<!--Primary container for the page content
 			The .container class ensures the page content is fit and centered to the screen-->
 		<div class="container">
-			<div class="tab-content card">
+			<div class="tab-content card mb-2">
 				<div class="streakhs grey lighten-2">Connected ratgdo Devices</div>
 	
 				<div class="row no-gutters grey lighten-3">
@@ -60,55 +65,57 @@
 				<!-- Settings -->
 				<div class="streakhs grey lighten-2">Settings</div>
 				
-				<div class="row">
-					<div class="hs-toggle col-sm-6">
-						<span class="hs-toggle-control">
-							<span class="form-check form-check-inline hs-toggle-checkbox">
-								<input type="checkbox" class="form-check-input" id="checkbox-use-external-broker" />
-								<label class="form-check-label has-toggle-checkbox-label" for="checkbox-use-external-broker">
-									Use custom MQTT broker
-								</label>
+				<div id="settings-container">
+					<div class="row">
+						<div class="hs-toggle col-sm-6">
+							<span class="hs-toggle-control">
+								<span class="form-check form-check-inline hs-toggle-checkbox">
+									<input type="checkbox" class="form-check-input" id="checkbox-use-external-broker" />
+									<label class="form-check-label has-toggle-checkbox-label" for="checkbox-use-external-broker">
+										Use custom MQTT broker
+									</label>
+								</span>
 							</span>
-						</span>
+						</div>
+
+						<div class="col-sm-6 external-broker-only" id="mqtt-status"></div>
 					</div>
 					
-					<div class="col-sm-6 external-broker-only" id="mqtt-status"></div>
-				</div>
-				
-				<div class="external-broker-only">
-					<div class="row mt-1 mb-1 no-gutters">
-						<div class="col-lg-6 md-form">
-							<input type="text" id="input-mqtt-host" class="form-control" />
-							<label for="input-mqtt-host">MQTT Broker Address</label>
+					<div class="external-broker-only">
+						<div class="row mt-1 mb-1 no-gutters">
+							<div class="col-lg-6 md-form">
+								<input type="text" id="input-mqtt-host" class="form-control" />
+								<label for="input-mqtt-host">MQTT Broker Address</label>
+							</div>
+						</div>
+	
+						<div class="row mt-1 mb-1 no-gutters">
+							<div class="col-lg-6 md-form">
+								<input type="number" min="1" max="65535" id="input-mqtt-port" class="form-control" value="1883" />
+								<label for="input-mqtt-port">MQTT Broker Port</label>
+							</div>
+						</div>
+	
+						<div class="row mt-1 mb-1 no-gutters">
+							<div class="col-lg-6 md-form">
+								<input type="text" id="input-mqtt-username" class="form-control" />
+								<label for="input-mqtt-username">MQTT Username</label>
+							</div>
+						</div>
+	
+						<div class="row mt-1 mb-1 no-gutters">
+							<div class="col-lg-6 md-form">
+								<input type="password" id="input-mqtt-password" class="form-control" />
+								<label for="input-mqtt-password">MQTT Password</label>
+							</div>
 						</div>
 					</div>
-
-					<div class="row mt-1 mb-1 no-gutters">
-						<div class="col-lg-6 md-form">
-							<input type="number" min="1" max="65535" id="input-mqtt-port" class="form-control" value="1883" />
-							<label for="input-mqtt-port">MQTT Broker Port</label>
-						</div>
+					
+					<div class="row mt-2 pl-2" id="save-btn-container">
+						<button type="button" class="btn btn-success waves-effect waves-light" id="btn-save">
+							Save
+						</button>
 					</div>
-
-					<div class="row mt-1 mb-1 no-gutters">
-						<div class="col-lg-6 md-form">
-							<input type="text" id="input-mqtt-username" class="form-control" />
-							<label for="input-mqtt-username">MQTT Username</label>
-						</div>
-					</div>
-
-					<div class="row mt-1 mb-1 no-gutters">
-						<div class="col-lg-6 md-form">
-							<input type="password" id="input-mqtt-password" class="form-control" />
-							<label for="input-mqtt-password">MQTT Password</label>
-						</div>
-					</div>
-				</div>
-				
-				<div class="row mt-2 pl-2" id="save-btn-container">
-					<button type="button" class="btn btn-success waves-effect waves-light" id="btn-save">
-						Save
-					</button>
 				</div>
 				
 				<div class="streakhs grey lighten-2">Setup Instructions</div>
@@ -128,67 +135,113 @@
 				
 				<hr />
 				
-				<dl>
-					<dt>Device Name &amp; Web Config Username</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>Device Name &amp; Web Config Username</small>
+					</div>
+					<p>
 						<em>
 							Choose whatever name you want, as long as it's unique within your home.
 							If you change this name in the future, you will need to set up your HS4 devices from
 							scratch again. The name must not contain any of these characters: / \ # +
 						</em>
-					</dd>
+					</p>
+				</div>
 
-					<dt>OTA &amp; Web Config Password</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>OTA &amp; Web Config Password</small>
+					</div>
+					<p>
 						<em>
 							Choose whatever password you want. HS4 will not need to know this password.
 						</em>
-					</dd>
+					</p>
+				</div>
 
-					<dt>IP address</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>IP address</small>
+					</div>
+					<p>
 						<em>
 							Leave as default or choose whatever IP address you want.
 						</em>
-					</dd>
+					</p>
+				</div>
 
-					<dt>SSID</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>SSID</small>
+					</div>
+					<p>
 						<em>
 							Your WiFi network name.
 						</em>
-					</dd>
+					</p>
+				</div>
 
-					<dt>WiFi password</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>WiFi password</small>
+					</div>
+					<p>
 						<em>
 							Your WiFi network password.
 						</em>
-					</dd>
+					</p>
+				</div>
 
-					<dt>Enable MQTT</dt>
-					<dd>ON</dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>Enable MQTT</small>
+					</div>
+					<p class="code">ON</p>
+				</div>
 
-					<dt>MQTT server IP</dt>
-					<dd id="broker-ip-address" class="code"></dd>
-					
-					<dt>MQTT server port</dt>
-					<dd id="broker-port" class="code"></dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>MQTT server IP</small>
+					</div>
+					<p id="broker-ip-address" class="code"></p>
+				</div>
 
-					<dt>MQTT server username</dt>
-					<dd id="internal-broker-username" class="code internal-broker-only"></dd>
-					<dd id="external-broker-username" class="italic external-broker-only">Determined by your broker</dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>MQTT server port</small>
+					</div>
+					<p id="broker-port" class="code"></p>
+				</div>
 
-					<dt>MQTT server password</dt>
-					<dd id="internal-broker-password" class="code internal-broker-only"></dd>
-					<dd id="external-broker-password" class="italic external-broker-only">Determined by your broker</dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>MQTT server username</small>
+					</div>
+					<p id="internal-broker-username" class="code internal-broker-only"></p>
+					<p id="external-broker-username" class="italic external-broker-only">
+						Determined by your broker
+					</p>
+				</div>
 
-					<dt>MQTT Topic Prefix</dt>
-					<dd>
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>MQTT server password</small>
+					</div>
+					<p id="internal-broker-password" class="code internal-broker-only"></p>
+					<p id="external-broker-password" class="italic external-broker-only">
+						Determined by your broker
+					</p>
+				</div>
+
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>MQTT Topic Prefix</small>
+					</div>
+					<p>
 						<span class="code">ratgdo/</span>
 						<em>(the slash at the end is important!)</em>
-					</dd>
-				</dl>
+					</p>
+				</div>
 				
 				<hr />
 				
@@ -198,6 +251,49 @@
 					door opener, as described on the
 					<a href="https://paulwieland.github.io/ratgdo/02_configuration.html" target="_blank">ratgdo configuration page</a>.
 				</p>
+
+				<div class="streakhs grey lighten-2">Help &amp; Support</div>
+
+				<!--
+				<div class="jui-view mt-0">
+					<div class="jui-title">
+						<small>Support and Documentation</small>
+					</div>
+					<p><a href="#">HomeSeer Forum</a></p>
+				</div>
+				-->
+				
+				<div class="jui-view mt-0">
+					<div class="jui-title">
+						<small>Fund Future Development</small>
+					</div>
+					<p>
+						This plugin is and always will be free.<br />
+						<a href="https://github.com/sponsors/DoctorMcKay" target="_blank">
+							Please consider donating to fund future development.
+						</a>
+					</p>
+				</div>
+
+				<div class="jui-view">
+					<div class="jui-title">
+						<small>System ID (include this with any support requests)</small>
+					</div>
+					<p id="custom-system-id"></p>
+				</div>
+
+				<div class="row mt-4">
+					<div class="hs-toggle col-sm-6">
+							<span class="hs-toggle-control">
+								<span class="form-check form-check-inline hs-toggle-checkbox">
+									<input type="checkbox" class="form-check-input" id="checkbox-debug-logging" />
+									<label class="form-check-label has-toggle-checkbox-label" for="checkbox-debug-logging">
+										Enable debug logging
+									</label>
+								</span>
+							</span>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -217,7 +313,7 @@
 							.addClass(useExternal ? 'using-external-broker' : 'using-internal-broker');
 				});
 				
-				$('button, input').on('keyup change', () => {
+				$('#settings-container button, #settings-container input').on('keyup change', () => {
 					$('#save-btn-container').show();
 				});
 				
@@ -248,11 +344,31 @@
 					}
 				});
 				
+				$('#checkbox-debug-logging').change(() => {
+					jsonRpc('SetDebugLogging', {debug_logging: $('#checkbox-debug-logging').prop('checked')});
+				});
+				
 				async function init() {
+					await updateInfo();
 					await updateConfig();
 					await updateMqttStatus();
 					await updateDevices();
 					$('body').removeClass('loading');
+				}
+				
+				async function updateInfo() {
+					let info = await jsonRpc('GetInfo');
+					
+					$('#custom-system-id').text(info.custom_system_id);
+					$('#checkbox-debug-logging').attr('checked', info.debug_logging);
+					
+					if (info.debug_build) {
+						$('#checkbox-debug-logging').attr('checked', true)
+								.prop('disabled', true)
+								.parent()
+								.find('label')
+								.text('Enable debug logging (debug build)');
+					}
 				}
 				
 				async function updateConfig() {
