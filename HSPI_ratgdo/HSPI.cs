@@ -154,18 +154,28 @@ public class HSPI : AbstractPlugin {
 		}
 
 		if (brokerAddress == "internal") {
-			if (_mqttServer == null) {
-				WriteLog(ELogType.Debug, "Starting internal MQTT broker");
-				_mqttServer = new MqttServerManager(
-					this,
-					PLUGIN_ID,
-					GetIniSetting("MQTT_Internal", "password", "")
-				);
-				
-				await _mqttServer.Initialize();
-			}
+			try {
+				if (_mqttServer == null) {
+					WriteLog(ELogType.Debug, "Starting internal MQTT broker");
+					_mqttServer = new MqttServerManager(
+						this,
+						PLUGIN_ID,
+						GetIniSetting("MQTT_Internal", "password", "")
+					);
 
-			await _mqttClient.InternalConnect(_mqttServer);
+					await _mqttServer.Initialize();
+				}
+
+				await _mqttClient.InternalConnect(_mqttServer);
+			} catch (Exception ex) {
+				_mqttServer?.Dispose();
+				_mqttServer = null;
+				
+				WriteLog(ELogType.Error, $"Unable to start internal MQTT broker: {ex.Message}");
+				await Task.Delay(2000);
+				await MqttConnect();
+				return;
+			}
 		} else {
 			ushort brokerPort = ushort.Parse(GetIniSetting("MQTT", "broker_port", "1883"));
 			string username = GetIniSetting("MQTT", "client_username", "");
