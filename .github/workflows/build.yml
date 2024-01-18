@@ -39,7 +39,7 @@ jobs:
         cp HSPI_ratgdo\bin\Release\HSPI_ratgdo.exe artifacts\HSPI_ratgdo.exe
         cp HSPI_ratgdo\bin\Release\HSPI_ratgdo.exe.config artifacts\HSPI_ratgdo.exe.config
         cp HSPI_ratgdo\bin\Release\*.dll artifacts
-        cp html\*.* artifacts
+        cp HSPI_ratgdo\html\*.* artifacts
         cp install.txt artifacts\install.txt
         $release_version = (Get-ChildItem -Filter "artifacts\HSPI_ratgdo.exe" | Select-Object -ExpandProperty VersionInfo).FileVersion.Replace('.', '-')
         echo "release_version=$release_version"
@@ -51,7 +51,7 @@ jobs:
         cp HSPI_ratgdo\bin\Debug\HSPI_ratgdo.exe artifacts-debug\HSPI_ratgdo.exe
         cp HSPI_ratgdo\bin\Debug\HSPI_ratgdo.exe.config artifacts-debug\HSPI_ratgdo.exe.config
         cp HSPI_ratgdo\bin\Debug\*.dll artifacts-debug
-        cp html\*.* artifacts-debug
+        cp HSPI_ratgdo\html\*.* artifacts-debug
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
